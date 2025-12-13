@@ -1,0 +1,27 @@
+{
+  "name": "portfolio-website",
+  "version": "1.0.0",
+  "description": "Portfolio website built with Bootstrap featuring Perlin noise visualizations",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx live-server --port=8080 --open=index.html"
+  },
+  "keywords": [
+    "portfolio",
+    "bootstrap",
+    "perlin-noise",
+    "p5js",
+    "threejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "p5": "^1.9.0",
+    "three": "^0.160.0"
+  }
+}
