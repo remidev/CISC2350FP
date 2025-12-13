@@ -43,8 +43,19 @@
 
         <!-- p5.js Demo -->
         <section class="mb-5">
-            <h2 class="h3">p5.js - Flowing Field</h2>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h3 mb-0">p5.js - Flowing Field</h2>
+                <button class="btn btn-sm btn-outline-primary" onclick="resetP5Particles()">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </button>
+            </div>
             <p class="text-muted">Perlin noise flow field visualization using p5.js</p>
+            <div class="mb-3">
+                <label for="fadeSlider" class="form-label">Trail Fade Speed: <span id="fadeValue">25</span></label>
+                <!-- autocomplete="off" prevents browser from persisting slider position across page reloads -->
+                <input type="range" class="form-range" id="fadeSlider" min="1" max="100" value="25" autocomplete="off"
+                       oninput="setP5FadeAlpha(this.value); document.getElementById('fadeValue').textContent = this.value;">
+            </div>
             <div id="p5Canvas"></div>
         </section>
 

@@ -17,3 +17,9 @@
     display: block;
     border-radius: 8px;
 }
+
+/* Reset button styling */
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+}

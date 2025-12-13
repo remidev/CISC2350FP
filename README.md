@@ -54,5 +54,15 @@ final/
 ### npm audit vulnerabilities
 Running `npm install` may show security vulnerabilities in `live-server` dependencies. These are **development-only dependencies** that only run locally and do not affect the deployed website. The actual site is purely static HTML/CSS/JS with no backend, so these pose no security risk to users.
 
+## Future Enhancements / Ideas to Consider
+
+### p5.js Flow Field Demo
+- **Per-particle noise sensitivity:** Give each particle its own `noiseScale` value (e.g., randomize between 0.008-0.012). This would make particles follow slightly different flows, creating more organic motion and further reducing clustering.
+
+### General
+- Add three.js 3D Perlin noise visualization
+- Implement additional interactive features (color changes, pattern switching, etc.)
+- Add mobile touch event support for particle interactions
+
 ## Deployment
 TBD - Will be hosted on GitHub Pages or similar platform
