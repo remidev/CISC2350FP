@@ -11,6 +11,26 @@ const particleCount = 200;
 const particles = [];
 let time = 0;
 
+// Mouse tracking
+let mouse = {
+    x: null,
+    y: null,
+    radius: 100 // repulsion radius
+};
+
+// Track mouse position
+canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+});
+
+// Clear mouse position when leaving canvas
+canvas.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+});
+
 function rand(min, max) {
     return Math.random() * (max - min) + min;
 }
@@ -42,6 +62,22 @@ function animate() {
 
         p.y += n * 0.8;    // vertical wave
         p.x += Math.sin(n * 2) * 0.4; // small horizontal drift
+
+        // Mouse repulsion
+        if (mouse.x !== null && mouse.y !== null) {
+            const dx = p.x - mouse.x;
+            const dy = p.y - mouse.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < mouse.radius) {
+                // Calculate repulsion force (stronger when closer)
+                const force = (mouse.radius - distance) / mouse.radius;
+                const angle = Math.atan2(dy, dx);
+                
+                p.x += Math.cos(angle) * force * 5;
+                p.y += Math.sin(angle) * force * 5;
+            }
+        }
 
         // wrap-around
         if (p.y > canvas.height) p.y = 0;
