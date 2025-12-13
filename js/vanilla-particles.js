@@ -7,8 +7,10 @@ const ctx = canvas.getContext("2d");
 canvas.width = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
 
-const particleCount = 200;
+const baselineCount = 200;
+const maxCount = 350;
 const particles = [];
+const effectParticles = []; // For deletion effects
 let time = 0;
 
 // Mouse tracking
@@ -31,6 +33,27 @@ canvas.addEventListener('mouseleave', () => {
     mouse.y = null;
 });
 
+// Click to add particle burst
+canvas.addEventListener('click', (e) => {
+    if (particles.length >= maxCount) return; // At cap, don't add more
+    
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+    
+    const burstSize = Math.floor(rand(10, 21)); // 10-20 particles
+    const actualBurst = Math.min(burstSize, maxCount - particles.length);
+    
+    for (let i = 0; i < actualBurst; i++) {
+        particles.push({
+            x: clickX + rand(-10, 10), // Small spread around click
+            y: clickY + rand(-10, 10),
+            radius: rand(2, 4),
+            offset: rand(0, 9999)
+        });
+    }
+});
+
 function rand(min, max) {
     return Math.random() * (max - min) + min;
 }
@@ -41,13 +64,27 @@ function noise(x) {
 }
 
 // ----- Create particles -----
-for (let i = 0; i < particleCount; i++) {
+for (let i = 0; i < baselineCount; i++) {
     particles.push({
         x: rand(0, canvas.width),
         y: rand(0, canvas.height),
         radius: rand(2, 4),
         offset: rand(0, 9999)
     });
+}
+
+function createDeletionEffect(x, y) {
+    for (let i = 0; i < 4; i++) {
+        effectParticles.push({
+            x: x,
+            y: y,
+            vx: rand(-2, 2),
+            vy: rand(-2, 2),
+            lifetime: 60,
+            maxLifetime: 60,
+            radius: 1.5
+        });
+    }
 }
 
 function animate() {
@@ -57,7 +94,15 @@ function animate() {
 
     time += 0.01;
 
-    for (let p of particles) {
+    // Handle particle cap - remove oldest if at max
+    while (particles.length > maxCount) {
+        const removed = particles.shift(); // Remove oldest
+        createDeletionEffect(removed.x, removed.y);
+    }
+
+    // Update and draw main particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
         let n = noise(p.offset + time);
 
         p.y += n * 0.8;    // vertical wave
@@ -79,16 +124,50 @@ function animate() {
             }
         }
 
-        // wrap-around
-        if (p.y > canvas.height) p.y = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.x < 0) p.x = canvas.width;
+        // Check if particle is out of bounds (with margin inside canvas)
+        const margin = 20; // Delete/wrap 20px inside the edge
+        const outOfBounds = p.y > canvas.height - margin || p.y < margin || 
+                           p.x > canvas.width - margin || p.x < margin;
+        
+        if (outOfBounds && particles.length > baselineCount) {
+            // Over baseline - delete instead of wrap with effect
+            createDeletionEffect(p.x, p.y);
+            particles.splice(i, 1);
+            continue;
+        } else if (outOfBounds) {
+            // At or below baseline - wrap around
+            if (p.y > canvas.height - margin) p.y = margin;
+            if (p.y < margin) p.y = canvas.height - margin;
+            if (p.x > canvas.width - margin) p.x = margin;
+            if (p.x < margin) p.x = canvas.width - margin;
+        }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
     }
+
+    // Update and draw effect particles
+    for (let i = effectParticles.length - 1; i >= 0; i--) {
+        let e = effectParticles[i];
+        e.x += e.vx;
+        e.y += e.vy;
+        e.lifetime--;
+        
+        // Fade opacity based on remaining lifetime
+        let alpha = e.lifetime / e.maxLifetime;
+        ctx.fillStyle = `rgba(255, 80, 80, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        if (e.lifetime <= 0) {
+            effectParticles.splice(i, 1);
+        }
+    }
+
+    // Reset fill style for main particles
+    ctx.fillStyle = "white";
 
     requestAnimationFrame(animate);
 }
