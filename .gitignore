@@ -27,3 +27,6 @@ build/
 # Temporary files
 *.tmp
 *.temp
+
+# Local reference files
+CDN-REFERENCE.md

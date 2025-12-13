@@ -10,10 +10,10 @@ Portfolio website built using HTML, CSS, JavaScript, Bootstrap, and advanced gra
 
 ## Technologies
 - HTML5, CSS3, JavaScript
-- Bootstrap 5.3.2
-- p5.js
-- three.js
-- Node.js & npm for development
+- Bootstrap 5.3.2 (CDN)
+- p5.js (CDN)
+- three.js (CDN)
+- Node.js & npm for development server
 
 ## How to run locally
 
@@ -24,10 +24,12 @@ Portfolio website built using HTML, CSS, JavaScript, Bootstrap, and advanced gra
 ### Setup
 1. Clone the repository
 2. Navigate to the project directory: `cd final`
-3. Install dependencies: `npm install`
+3. Install development dependencies: `npm install`
 4. Start the development server: `npm run dev`
 
 The site will automatically open in your browser at `http://localhost:8080`
+
+**Note:** p5.js and three.js are loaded via CDN links in the HTML files, so no additional library installation is needed.
 
 ### Available Scripts
 - `npm start` - Start a basic HTTP server
