@@ -1,0 +1,19 @@
+/* Projects page styles */
+
+#waveCanvas {
+    display: block;
+    width: 100%;
+    height: 400px;
+    background: black;
+    border-radius: 8px;
+}
+
+#p5Canvas {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#p5Canvas canvas {
+    display: block;
+    border-radius: 8px;
+}

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects | MySite</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/projects.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
 </head>
 
@@ -47,160 +48,10 @@
             <div id="p5Canvas"></div>
         </section>
 
-        <style>
-            #waveCanvas {
-                display: block;
-                width: 100%;
-                height: 400px;
-                background: black;
-                border-radius: 8px;
-            }
-            
-            #p5Canvas {
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            
-            #p5Canvas canvas {
-                display: block;
-                border-radius: 8px;
-            }
-        </style>
-        
-        <!-- Vanilla JS Script -->
-        <script>
-            const canvas = document.getElementById("waveCanvas");
-            const ctx = canvas.getContext("2d");
-
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            const particleCount = 200;
-            const particles = [];
-            let time = 0;
-
-            function rand(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
-            // --- Simple Perlin-like noise ----
-            function noise(x) {
-                return (Math.sin(x * 1.3) + Math.sin(x * 0.7) + Math.sin(x * 3.1)) / 3;
-            }
-
-            // ----- Create particles -----
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: rand(0, canvas.width),
-                    y: rand(0, canvas.height),
-                    radius: rand(2, 4),
-                    offset: rand(0, 9999)
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "white";
-
-                time += 0.01;
-
-                for (let p of particles) {
-                    let n = noise(p.offset + time);
-
-                    p.y += n * 0.8;    // vertical wave
-                    p.x += Math.sin(n * 2) * 0.4; // small horizontal drift
-
-                    // wrap-around
-                    if (p.y > canvas.height) p.y = 0;
-                    if (p.y < 0) p.y = canvas.height;
-                    if (p.x > canvas.width) p.x = 0;
-                    if (p.x < 0) p.x = canvas.width;
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                requestAnimationFrame(animate);
-            }
-
-            animate();
-
-        </script>
-
-        <!-- p5.js Script -->
-        <script>
-            // p5.js sketch using instance mode to avoid conflicts
-            const p5Sketch = (p) => {
-                let noiseScale = 0.01;
-                let particles = [];
-                
-                p.setup = () => {
-                    // Match the container width like vanilla canvas does
-                    let container = document.getElementById('p5Canvas');
-                    let canvasWidth = container.offsetWidth;
-                    let canvas = p.createCanvas(canvasWidth, 400);
-                    canvas.parent('p5Canvas');
-                    p.background(20);
-                    
-                    // Create particles
-                    for (let i = 0; i < 300; i++) {
-                        particles.push({
-                            x: p.random(p.width),
-                            y: p.random(p.height),
-                            prevX: 0,
-                            prevY: 0
-                        });
-                    }
-                };
-                
-                p.draw = () => {
-                    // Fade effect for trails
-                    p.fill(20, 20, 20, 10);
-                    p.noStroke();
-                    p.rect(0, 0, p.width, p.height);
-                    
-                    // Draw and move particles
-                    for (let particle of particles) {
-                        particle.prevX = particle.x;
-                        particle.prevY = particle.y;
-                        
-                        // Get noise value
-                        let noiseVal = p.noise(particle.x * noiseScale, particle.y * noiseScale, p.frameCount * 0.01);
-                        let angle = noiseVal * p.TWO_PI * 2;
-                        
-                        // Move particle
-                        particle.x += p.cos(angle) * 2;
-                        particle.y += p.sin(angle) * 2;
-                        
-                        // Wrap around edges
-                        let wrapped = false;
-                        if (particle.x < 0) { particle.x = p.width; wrapped = true; }
-                        if (particle.x > p.width) { particle.x = 0; wrapped = true; }
-                        if (particle.y < 0) { particle.y = p.height; wrapped = true; }
-                        if (particle.y > p.height) { particle.y = 0; wrapped = true; }
-                        
-                        // Only draw trail if particle didn't wrap around
-                        if (!wrapped) {
-                            p.stroke(100, 150, 255, 150);
-                            p.strokeWeight(1);
-                            p.line(particle.prevX, particle.prevY, particle.x, particle.y);
-                        }
-                    }
-                };
-                
-                p.windowResized = () => {
-                    let container = document.getElementById('p5Canvas');
-                    let canvasWidth = container.offsetWidth;
-                    p.resizeCanvas(canvasWidth, 400);
-                    p.background(20);
-                };
-            };
-            
-            // Create p5 instance
-            new p5(p5Sketch);
-        </script>
+        <!-- Styles moved to css/projects.css -->
+        <!-- Scripts moved to js/ folder -->
+        <script src="js/vanilla-particles.js"></script>
+        <script src="js/p5-flow-field.js"></script>
     </main>
 
     <footer class="bg-dark text-light text-center py-3 mt-5">
