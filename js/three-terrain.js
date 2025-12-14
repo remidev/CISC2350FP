@@ -4,9 +4,15 @@
 // Wrap in IIFE to avoid global scope pollution
 (function() {
     
-// Simple Perlin-like noise function (same as vanilla demo)
+// Improved multi-octave noise function for more natural terrain
 function noise2D(x, y) {
-    return (Math.sin(x * 1.3 + y * 0.7) + Math.sin(x * 0.7 - y * 1.1) + Math.sin(x * 2.1 + y * 1.3)) / 3;
+    // Combine multiple frequencies and rotations for non-directional terrain
+    const octave1 = Math.sin(x * 1.3 + y * 0.7) + Math.sin(x * 0.7 - y * 1.1);
+    const octave2 = Math.sin(x * 2.7 - y * 1.9) + Math.sin(x * 1.9 + y * 2.3);
+    const octave3 = Math.sin(x * 0.5 + y * 1.7) + Math.sin(x * 1.8 - y * 0.6);
+    
+    // Mix octaves with decreasing weights
+    return (octave1 * 0.5 + octave2 * 0.3 + octave3 * 0.2) / 3;
 }
 
 // Scene setup
@@ -50,12 +56,17 @@ const geometry = new THREE.PlaneGeometry(
 // Rotate to be horizontal
 geometry.rotateX(-Math.PI / 2);
 
+// Add color attribute for topographical view
+const colors = new Float32Array(geometry.attributes.position.count * 3);
+geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
 // Material with wireframe option
 const material = new THREE.MeshPhongMaterial({
     color: 0x4488ff,
     wireframe: false,
     flatShading: true,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
+    vertexColors: false // Will toggle this on/off
 });
 
 const terrain = new THREE.Mesh(geometry, material);
@@ -112,9 +123,65 @@ renderer.domElement.addEventListener('mouseleave', () => {
 
 // Animation variables
 let time = 0;
-const noiseScale = 0.05; // Reduced for smoother terrain
-const heightScale = 4; // Slightly reduced height variation
+let noiseScale = 0.05; // Controls detail level (lower = smoother)
+let heightScale = 5; // Controls peak/valley height
+let animationSpeed = 0.005; // Speed of terrain morphing
 let isPaused = false;
+let isTopoMode = false;
+
+// Helper function to convert height to color (blue -> green -> yellow -> red)
+function heightToColor(height, minHeight, maxHeight) {
+    const normalized = (height - minHeight) / (maxHeight - minHeight);
+    const color = new THREE.Color();
+    
+    if (normalized < 0.25) {
+        // Blue to cyan (water to shallow)
+        color.lerpColors(
+            new THREE.Color(0x0066cc),
+            new THREE.Color(0x00cccc),
+            normalized * 4
+        );
+    } else if (normalized < 0.5) {
+        // Cyan to green (shallow to land)
+        color.lerpColors(
+            new THREE.Color(0x00cccc),
+            new THREE.Color(0x00cc00),
+            (normalized - 0.25) * 4
+        );
+    } else if (normalized < 0.75) {
+        // Green to yellow (land to hills)
+        color.lerpColors(
+            new THREE.Color(0x00cc00),
+            new THREE.Color(0xcccc00),
+            (normalized - 0.5) * 4
+        );
+    } else {
+        // Yellow to red (hills to peaks)
+        color.lerpColors(
+            new THREE.Color(0xcccc00),
+            new THREE.Color(0xcc0000),
+            (normalized - 0.75) * 4
+        );
+    }
+    
+    return color;
+}
+
+// Control functions
+window.setThreeHeight = function(value) {
+    heightScale = parseFloat(value);
+    document.getElementById('heightValue').textContent = value;
+};
+
+window.setThreeSmoothness = function(value) {
+    noiseScale = parseFloat(value);
+    document.getElementById('smoothnessValue').textContent = value;
+};
+
+window.setThreeSpeed = function(value) {
+    animationSpeed = parseFloat(value);
+    document.getElementById('speedValue').textContent = value;
+};
 
 // Pause toggle function
 window.toggleThreePause = function() {
@@ -123,16 +190,28 @@ window.toggleThreePause = function() {
     btn.textContent = isPaused ? 'Resume Animation' : 'Pause Animation';
 };
 
+// Topographical toggle function
+window.toggleThreeTopo = function() {
+    isTopoMode = !isTopoMode;
+    material.vertexColors = isTopoMode;
+    material.needsUpdate = true;
+};
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
     
     // Only update terrain animation if not paused
     if (!isPaused) {
-        time += 0.005; // Slower animation for smoother appearance
+        time += animationSpeed;
         
         // Update terrain vertices based on Perlin noise
         const positions = terrain.geometry.attributes.position;
+        const colors = terrain.geometry.attributes.color;
+        
+        // Find min/max heights for color normalization
+        let minHeight = Infinity;
+        let maxHeight = -Infinity;
         
         for (let i = 0; i < positions.count; i++) {
             const x = positions.getX(i);
@@ -141,6 +220,19 @@ function animate() {
             // Calculate height using noise function
             const height = noise2D(x * noiseScale, z * noiseScale + time) * heightScale;
             positions.setY(i, height);
+            
+            minHeight = Math.min(minHeight, height);
+            maxHeight = Math.max(maxHeight, height);
+        }
+        
+        // Update vertex colors if in topographical mode
+        if (isTopoMode) {
+            for (let i = 0; i < positions.count; i++) {
+                const height = positions.getY(i);
+                const color = heightToColor(height, minHeight, maxHeight);
+                colors.setXYZ(i, color.r, color.g, color.b);
+            }
+            colors.needsUpdate = true;
         }
         
         positions.needsUpdate = true;
