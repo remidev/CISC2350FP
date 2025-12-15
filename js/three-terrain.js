@@ -93,7 +93,7 @@ let previousMouseX = 0;
 let previousMouseY = 0;
 let cameraRotationX = 0;
 let cameraRotationY = 0;
-const cameraDistance = 30;
+let cameraDistance = 30; // Changed from const to let for zoom control
 
 renderer.domElement.addEventListener('mousedown', (e) => {
     isDragging = true;
@@ -123,6 +123,17 @@ renderer.domElement.addEventListener('mouseup', () => {
 
 renderer.domElement.addEventListener('mouseleave', () => {
     isDragging = false;
+});
+
+// Mouse wheel zoom control
+renderer.domElement.addEventListener('wheel', (e) => {
+    e.preventDefault(); // Prevent page scroll
+    
+    // Normalize wheel delta for cross-browser compatibility
+    const delta = e.deltaY * 0.05;
+    
+    // Adjust camera distance (30 = min/current, 60 = max zoom out)
+    cameraDistance = Math.max(30, Math.min(60, cameraDistance + delta));
 });
 
 // Animation variables
