@@ -20,3 +20,22 @@ footer {
     flex-shrink: 0;
     margin-top: auto !important;
 }
+
+/* Dark mode toggle button sizing */
+#darkModeToggle {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dark mode body background - lighter than navbar/footer */
+[data-bs-theme="dark"] body {
+    background-color: #34383e;
+}
+
+[data-bs-theme="dark"] main {
+    background-color: #34383e;
+}
