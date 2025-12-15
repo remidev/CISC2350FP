@@ -54,11 +54,6 @@ final/
 ### npm audit vulnerabilities
 Running `npm install` may show security vulnerabilities in `live-server` dependencies. These are **development-only dependencies** that only run locally and do not affect the deployed website. The actual site is purely static HTML/CSS/JS with no backend, so these pose no security risk to users.
 
-### General
-- Content migration from existing portfolio
-- Additional interactive features (animations, transitions)
-- Performance optimizations for mobile devices
-
 ## Deployment
 Live site: [https://remidev.github.io/CISC2350FP/](https://remidev.github.io/CISC2350FP/)
 
