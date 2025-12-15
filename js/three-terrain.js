@@ -44,7 +44,7 @@ directionalLight.position.set(10, 20, 10);
 scene.add(directionalLight);
 
 // Create terrain mesh
-const gridSize = 30; // Reduced for cleaner wireframe
+const gridSize = 50; // Increased resolution for smoother contours
 const spacing = 2; // Increased spacing for smoother look
 const geometry = new THREE.PlaneGeometry(
     gridSize * spacing,
@@ -290,15 +290,6 @@ window.toggleThreePause = function() {
     isPaused = !isPaused;
     const btn = document.getElementById('pauseThreeBtn');
     btn.textContent = isPaused ? 'Resume Animation' : 'Pause Animation';
-    
-    // Hide contours when resuming animation
-    if (!isPaused && showContours) {
-        showContours = false;
-        generateContourLines();
-        material.opacity = 1.0;
-        material.transparent = false;
-        material.needsUpdate = true;
-    }
 };
 
 // Topographical toggle function
@@ -306,30 +297,55 @@ window.toggleThreeTopo = function() {
     isTopoMode = !isTopoMode;
     material.vertexColors = isTopoMode;
     material.needsUpdate = true;
+    
+    // Calculate colors immediately if paused and turning on topo mode
+    if (isTopoMode && isPaused) {
+        const positions = terrain.geometry.attributes.position;
+        const colors = terrain.geometry.attributes.color;
+        
+        // Find min/max heights
+        let minHeight = Infinity;
+        let maxHeight = -Infinity;
+        for (let i = 0; i < positions.count; i++) {
+            const height = positions.getY(i);
+            minHeight = Math.min(minHeight, height);
+            maxHeight = Math.max(maxHeight, height);
+        }
+        
+        // Update vertex colors
+        for (let i = 0; i < positions.count; i++) {
+            const height = positions.getY(i);
+            const color = heightToColor(height, minHeight, maxHeight);
+            colors.setXYZ(i, color.r, color.g, color.b);
+        }
+        colors.needsUpdate = true;
+    }
 };
 
 // Contour lines toggle function
 window.toggleThreeContours = function() {
-    // Auto-pause animation if not already paused
-    if (!isPaused) {
-        isPaused = true;
-        const pauseBtn = document.getElementById('pauseThreeBtn');
-        pauseBtn.textContent = 'Resume Animation';
-    }
-    
     showContours = !showContours;
     
     // Make terrain more transparent when contours are shown
     if (showContours) {
         material.opacity = 0.4;
         material.transparent = true;
+        // Generate contours immediately if paused (won't happen in animate loop)
+        if (isPaused) {
+            generateContourLines();
+        }
     } else {
         material.opacity = 1.0;
         material.transparent = false;
+        // Clear contours when toggled off
+        if (contourLines) {
+            scene.remove(contourLines);
+            contourLines.geometry.dispose();
+            contourLines.material.dispose();
+            contourLines = null;
+        }
     }
     material.needsUpdate = true;
-    
-    generateContourLines();
 };
 
 // Wireframe toggle function
@@ -381,6 +397,11 @@ function animate() {
         // Update wireframe to match terrain
         wireframe.geometry.dispose();
         wireframe.geometry = new THREE.WireframeGeometry(terrain.geometry);
+        
+        // Update contour lines if enabled
+        if (showContours) {
+            generateContourLines();
+        }
     }
     
     // Update camera position based on mouse rotation
