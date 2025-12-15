@@ -2,11 +2,11 @@
 Portfolio website built using HTML, CSS, JavaScript, Bootstrap, and advanced graphics libraries.
 
 ## Features
-- Bootstrap-based responsive design
-- Interactive Perlin noise visualizations
-- Vanilla JavaScript canvas demo (implemented)
-- p5.js demos (planned)
-- three.js 3D visualizations (planned)
+- Bootstrap-based responsive design with dark mode toggle
+- Three interactive Perlin noise visualizations:
+  - **Vanilla JavaScript** - Particle wave animation with mouse repulsion and click-to-burst effects
+  - **p5.js** - Flow field with particle-to-particle repulsion, reset button, and fade speed control
+  - **three.js** - 3D terrain mesh with animated Perlin noise, topographical colors, contour lines, and camera controls
 
 ## Technologies
 - HTML5, CSS3, JavaScript
@@ -54,15 +54,12 @@ final/
 ### npm audit vulnerabilities
 Running `npm install` may show security vulnerabilities in `live-server` dependencies. These are **development-only dependencies** that only run locally and do not affect the deployed website. The actual site is purely static HTML/CSS/JS with no backend, so these pose no security risk to users.
 
-## Future Enhancements / Ideas to Consider
-
-### p5.js Flow Field Demo
-- **Per-particle noise sensitivity:** Give each particle its own `noiseScale` value (e.g., randomize between 0.008-0.012). This would make particles follow slightly different flows, creating more organic motion and further reducing clustering.
-
 ### General
-- Add three.js 3D Perlin noise visualization
-- Implement additional interactive features (color changes, pattern switching, etc.)
-- Add mobile touch event support for particle interactions
+- Content migration from existing portfolio
+- Additional interactive features (animations, transitions)
+- Performance optimizations for mobile devices
 
 ## Deployment
-TBD - Will be hosted on GitHub Pages or similar platform
+Live site: [https://remidev.github.io/CISC2350FP/](https://remidev.github.io/CISC2350FP/)
+
+Hosted on GitHub Pages with automatic deployment on every push to the main branch.
