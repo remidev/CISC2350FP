@@ -1,6 +1,8 @@
 // Vanilla JavaScript Particle Wave Animation
 // Simple noise simulation using Canvas API
 
+console.log('vanilla-particles.js v1.1 - touch support added');
+
 const canvas = document.getElementById("waveCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -29,6 +31,25 @@ canvas.addEventListener('mousemove', (e) => {
 
 // Clear mouse position when leaving canvas
 canvas.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+});
+
+// Touch event handlers for mobile
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    mouse.x = touch.clientX - rect.left;
+    mouse.y = touch.clientY - rect.top;
+});
+
+canvas.addEventListener('touchend', () => {
+    mouse.x = null;
+    mouse.y = null;
+});
+
+canvas.addEventListener('touchcancel', () => {
     mouse.x = null;
     mouse.y = null;
 });
