@@ -39,3 +39,16 @@ footer {
 [data-bs-theme="dark"] main {
     background-color: #34383e;
 }
+
+/* Dark mode slider track styling - lighter for better visibility */
+[data-bs-theme="dark"] input[type="range"]::-webkit-slider-track {
+    background-color: #6c757d;
+}
+
+[data-bs-theme="dark"] input[type="range"]::-moz-range-track {
+    background-color: #6c757d;
+}
+
+[data-bs-theme="dark"] input[type="range"]::-ms-track {
+    background-color: #6c757d;
+}
