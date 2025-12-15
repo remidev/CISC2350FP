@@ -83,6 +83,10 @@ const wireframeMaterial = new THREE.LineBasicMaterial({
 const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
 scene.add(wireframe);
 
+// Contour lines container
+let contourLines = null;
+let showContours = false;
+
 // Simple mouse camera controls
 let isDragging = false;
 let previousMouseX = 0;
@@ -128,6 +132,93 @@ let heightScale = 5; // Controls peak/valley height
 let animationSpeed = 0.005; // Speed of terrain morphing
 let isPaused = false;
 let isTopoMode = false;
+
+// Function to generate contour lines at specific elevation intervals
+function generateContourLines() {
+    // Clear existing contour lines
+    if (contourLines) {
+        scene.remove(contourLines);
+        contourLines.geometry.dispose();
+        contourLines.material.dispose();
+        contourLines = null;
+    }
+    
+    if (!showContours) return;
+    
+    const positions = terrain.geometry.attributes.position;
+    const lineVertices = [];
+    
+    // Find min/max heights
+    let minHeight = Infinity;
+    let maxHeight = -Infinity;
+    for (let i = 0; i < positions.count; i++) {
+        const y = positions.getY(i);
+        minHeight = Math.min(minHeight, y);
+        maxHeight = Math.max(maxHeight, y);
+    }
+    
+    // Generate contour lines at intervals
+    const numContours = 8;
+    const interval = (maxHeight - minHeight) / numContours;
+    
+    for (let c = 1; c < numContours; c++) {
+        const targetHeight = minHeight + interval * c;
+        
+        // Check each quad in the terrain grid
+        for (let row = 0; row < gridSize - 1; row++) {
+            for (let col = 0; col < gridSize - 1; col++) {
+                const i0 = row * gridSize + col;
+                const i1 = row * gridSize + (col + 1);
+                const i2 = (row + 1) * gridSize + (col + 1);
+                const i3 = (row + 1) * gridSize + col;
+                
+                // Get quad heights
+                const h0 = positions.getY(i0);
+                const h1 = positions.getY(i1);
+                const h2 = positions.getY(i2);
+                const h3 = positions.getY(i3);
+                
+                // Check edges for intersections with target height
+                const edges = [
+                    {a: i0, b: i1, ha: h0, hb: h1},
+                    {a: i1, b: i2, ha: h1, hb: h2},
+                    {a: i2, b: i3, ha: h2, hb: h3},
+                    {a: i3, b: i0, ha: h3, hb: h0}
+                ];
+                
+                const intersections = [];
+                for (const edge of edges) {
+                    if ((edge.ha <= targetHeight && edge.hb >= targetHeight) ||
+                        (edge.ha >= targetHeight && edge.hb <= targetHeight)) {
+                        // Interpolate position along edge
+                        const t = (targetHeight - edge.ha) / (edge.hb - edge.ha);
+                        const x = positions.getX(edge.a) * (1 - t) + positions.getX(edge.b) * t;
+                        const z = positions.getZ(edge.a) * (1 - t) + positions.getZ(edge.b) * t;
+                        intersections.push(new THREE.Vector3(x, targetHeight, z));
+                    }
+                }
+                
+                // Draw line segments between intersection pairs
+                if (intersections.length >= 2) {
+                    lineVertices.push(intersections[0], intersections[1]);
+                }
+            }
+        }
+    }
+    
+    // Create line geometry
+    if (lineVertices.length > 0) {
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(lineVertices);
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+            linewidth: 2,
+            transparent: true,
+            opacity: 0.9
+        });
+        contourLines = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(contourLines);
+    }
+}
 
 // Helper function to convert height to color (blue -> green -> yellow -> red)
 function heightToColor(height, minHeight, maxHeight) {
@@ -188,6 +279,15 @@ window.toggleThreePause = function() {
     isPaused = !isPaused;
     const btn = document.getElementById('pauseThreeBtn');
     btn.textContent = isPaused ? 'Resume Animation' : 'Pause Animation';
+    
+    // Hide contours when resuming animation
+    if (!isPaused && showContours) {
+        showContours = false;
+        generateContourLines();
+        material.opacity = 1.0;
+        material.transparent = false;
+        material.needsUpdate = true;
+    }
 };
 
 // Topographical toggle function
@@ -195,6 +295,35 @@ window.toggleThreeTopo = function() {
     isTopoMode = !isTopoMode;
     material.vertexColors = isTopoMode;
     material.needsUpdate = true;
+};
+
+// Contour lines toggle function
+window.toggleThreeContours = function() {
+    // Auto-pause animation if not already paused
+    if (!isPaused) {
+        isPaused = true;
+        const pauseBtn = document.getElementById('pauseThreeBtn');
+        pauseBtn.textContent = 'Resume Animation';
+    }
+    
+    showContours = !showContours;
+    
+    // Make terrain more transparent when contours are shown
+    if (showContours) {
+        material.opacity = 0.4;
+        material.transparent = true;
+    } else {
+        material.opacity = 1.0;
+        material.transparent = false;
+    }
+    material.needsUpdate = true;
+    
+    generateContourLines();
+};
+
+// Wireframe toggle function
+window.toggleThreeWireframe = function() {
+    wireframe.visible = !wireframe.visible;
 };
 
 // Animation loop
