@@ -51,6 +51,10 @@ final/
 
 ## Known Issues
 
+### Mobile Interactions
+- **Vanilla JavaScript Demo**: Touch controls for particle repulsion may not work reliably on all mobile devices
+- **three.js Demo**: Camera rotation via drag is not functional on mobile/touch devices. Desktop mouse interaction required for camera control.
+
 ### npm audit vulnerabilities
 Running `npm install` may show security vulnerabilities in `live-server` dependencies. These are **development-only dependencies** that only run locally and do not affect the deployed website. The actual site is purely static HTML/CSS/JS with no backend, so these pose no security risk to users.
 
