@@ -1,8 +1,6 @@
 // Vanilla JavaScript Particle Wave Animation
 // Simple noise simulation using Canvas API
 
-console.log('vanilla-particles.js v1.1 - touch support added');
-
 const canvas = document.getElementById("waveCanvas");
 const ctx = canvas.getContext("2d");
 

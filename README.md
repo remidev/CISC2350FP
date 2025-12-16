@@ -2,11 +2,17 @@
 Portfolio website built using HTML, CSS, JavaScript, Bootstrap, and advanced graphics libraries.
 
 ## Features
-- Bootstrap-based responsive design with dark mode toggle
-- Three interactive Perlin noise visualizations:
+- **Responsive Design** - Bootstrap-based layout with persistent dark mode toggle (saves preference)
+- **Interactive Perlin Noise Visualizations** - Three distinct demos with real-time controls:
   - **Vanilla JavaScript** - Particle wave animation with mouse repulsion and click-to-burst effects
-  - **p5.js** - Flow field with particle-to-particle repulsion, reset button, and fade speed control
-  - **three.js** - 3D terrain mesh with animated Perlin noise, topographical colors, contour lines, and camera controls
+  - **p5.js** - Flow field with particle-to-particle repulsion, reset button, and adjustable fade speed slider
+  - **three.js** - 3D terrain mesh with animated Perlin noise, topographical mode toggle, contour lines, wireframe view, and adjustable height/smoothness/speed sliders
+- **Portfolio Section** - Recreation of a professional cinematographer's Squarespace portfolio featuring:
+  - Independent navigation system separate from main site
+  - 5 pages: home, narrative work, commercial work, cinematography reel, and contact
+  - CDN-hosted media (images and videos served via Squarespace CDN to avoid large local assets)
+  - Custom white-theme styling with sticky navbar and social media icons
+  - Hover effects and responsive design
 
 ## Technologies
 - HTML5, CSS3, JavaScript
@@ -38,15 +44,29 @@ The site will automatically open in your browser at `http://localhost:8080`
 ## Project Structure
 ```
 final/
-├── index.html      # Home page
-├── about.html      # About page
-├── projects.html   # Projects showcase with visualizations
-├── blog.html       # Blog page
-├── contact.html    # Contact page
-├── css/            # Custom stylesheets
-├── js/             # JavaScript files
-├── img/            # Images and assets
-└── package.json    # Node.js dependencies
+├── index.html         # Home page
+├── about.html         # About page
+├── projects.html      # Projects showcase with visualizations
+├── blog.html          # Blog page
+├── contact.html       # Contact page
+├── css/               # Custom stylesheets
+│   ├── main.css
+│   └── projects.css
+├── js/                # JavaScript files
+│   ├── darkmode.js
+│   ├── vanilla-particles.js
+│   ├── p5-flow-field.js
+│   └── three-terrain.js
+├── img/               # Images and assets
+├── portfolio/         # Inner portfolio section (Squarespace recreation)
+│   ├── index.html     # Portfolio home page
+│   ├── narrative.html # Narrative work showcase
+│   ├── commercial.html # Commercial work showcase
+│   ├── reel.html      # Cinematography reel
+│   ├── contact.html   # Portfolio contact page
+│   └── css/
+│       └── portfolio.css
+└── package.json       # Node.js dependencies
 ```
 
 ## Known Issues
