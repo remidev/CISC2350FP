@@ -1,0 +1,52 @@
+/* Portfolio Section Styling */
+
+body {
+    background-color: #000;
+    color: #fff;
+}
+
+.portfolio-navbar {
+    background-color: #111 !important;
+}
+
+.portfolio-content {
+    min-height: 80vh;
+    padding: 2rem 0;
+}
+
+.back-link {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.back-link:hover {
+    opacity: 1;
+}
+
+/* Video/Image grid placeholder styling */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.portfolio-item {
+    aspect-ratio: 16/9;
+    background-color: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.portfolio-item:hover {
+    transform: scale(1.02);
+}
+
+.portfolio-item img,
+.portfolio-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
