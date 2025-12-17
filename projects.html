@@ -42,7 +42,8 @@
         <!-- Vanilla JS Demo -->
         <section class="mb-5">
             <h2 class="h3">Vanilla JavaScript - Particle Waves</h2>
-            <p class="text-muted">Simple noise simulation using vanilla JavaScript and Canvas API</p>
+            <p class="text-muted">Simple noise simulation using vanilla JavaScript and Canvas API.</p>
+            <p class="text-muted"><em>Click to add particle bursts. Red particles indicate deletion effects.</em></p>
             <canvas id="waveCanvas"></canvas>
         </section>
 
@@ -55,6 +56,7 @@
                 </button>
             </div>
             <p class="text-muted">Perlin noise flow field visualization using p5.js</p>
+            <p class="text-muted"><em>Use the slider to adjust trail fade speed. 10 has a nice effect.</em></p>
             <div class="mb-3">
                 <label for="fadeSlider" class="form-label">Trail Fade Speed: <span id="fadeValue">25</span></label>
                 <!-- autocomplete="off" prevents browser from persisting slider position across page reloads -->
@@ -67,7 +69,9 @@
         <!-- three.js Demo -->
         <section class="mb-5">
             <h2 class="h3">three.js - 3D Perlin Terrain</h2>
-            <p class="text-muted">3D terrain mesh with Perlin noise height variation. <em>Drag to rotate camera.</em></p>
+            <p class="text-muted">3D terrain mesh with Perlin noise height variation.</p>
+            <p class="text-muted"><em>Drag to rotate camera, scroll to zoom.</em></p>
+            <p class="text-muted"><em>Try: Height 8, Roughness 0.1 </em></p>
             <button id="pauseThreeBtn" class="btn btn-secondary btn-sm mb-2" onclick="toggleThreePause()">Pause Animation</button>
             <button id="topoThreeBtn" class="btn btn-secondary btn-sm mb-2 ms-2" onclick="toggleThreeTopo()">Toggle Topographical</button>
             <button id="contourThreeBtn" class="btn btn-secondary btn-sm mb-2 ms-2" onclick="toggleThreeContours()">Toggle Contour Lines</button>
@@ -79,7 +83,7 @@
                     <input type="range" class="form-range" id="heightSlider" min="5" max="10" step="0.5" value="5" autocomplete="off" oninput="setThreeHeight(this.value)">
                 </div>
                 <div class="col-md-4">
-                    <label for="smoothnessSlider" class="form-label small">Smoothness: <span id="smoothnessValue">0.05</span></label>
+                    <label for="smoothnessSlider" class="form-label small">Roughness: <span id="smoothnessValue">0.05</span></label>
                     <input type="range" class="form-range" id="smoothnessSlider" min="0.01" max="0.2" step="0.01" value="0.05" autocomplete="off" oninput="setThreeSmoothness(this.value)">
                 </div>
                 <div class="col-md-4">
